@@ -68,7 +68,6 @@ public class TelaConsultaTipoDePeca extends JFrame {
 				TableColumnModel cm = table.getColumnModel();
 				cm.getColumn(0).setPreferredWidth(50);
 				cm.getColumn(1).setPreferredWidth(500);
-				cm.getColumn(2).setPreferredWidth(50);
 				table.updateUI();
 			}
 		});

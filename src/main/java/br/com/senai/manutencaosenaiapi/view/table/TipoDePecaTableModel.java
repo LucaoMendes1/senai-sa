@@ -9,7 +9,7 @@ import br.com.senai.manutencaosenaiapi.entity.TipoDePeca;
 
 public class TipoDePecaTableModel extends AbstractTableModel{
 
-	private final int QTDE_COLUNAS = 3;
+	private final int QTDE_COLUNAS = 2;
 	
 	private List<TipoDePeca> tipoDePecas;	
 	
