@@ -1,6 +1,5 @@
 package br.com.senai.manutencaosenaiapi.view;
 
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -24,11 +23,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.senai.manutencaosenaiapi.entity.Peca;
+import br.com.senai.manutencaosenaiapi.entity.TipoDePeca;
 import br.com.senai.manutencaosenaiapi.service.PecaService;
-import br.com.senai.manutencaosenaiapi.view.table.PecaTableModel;
+import br.com.senai.manutencaosenaiapi.service.TipoDePecaService;
+import br.com.senai.manutencaosenaiapi.view.table.TipoDePecaTableModel;
 
 @Component
-public class TelaConsultaDePeca extends JFrame {
+public class TelaConsultaTipoDePeca extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -37,15 +38,15 @@ public class TelaConsultaDePeca extends JFrame {
 	private JTable table;
 	
 	@Autowired
-	private PecaService service;
+	private TipoDePecaService serviceTipo;
 	
 	@Autowired
-	private TelaCadastroDePeca telaDeCadastro;
+	private TelaCadastroDeTipoDePeca telaDeCadastroTipoPeca;
 
 	/**
 	 * Create the frame.
 	 */
-	public TelaConsultaDePeca() {
+	public TelaConsultaTipoDePeca() {
 		setTitle("Tela de Consulta de Peça");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 526, 378);
@@ -61,8 +62,8 @@ public class TelaConsultaDePeca extends JFrame {
 		JButton btnPesquisar = new JButton("Pesquisar");
 		btnPesquisar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				List<Peca> pecas = service.listarPor(edtFiltro.getText());
-				PecaTableModel model = new PecaTableModel(pecas);
+				List<TipoDePeca> pecas = serviceTipo.listarPorTipo(edtFiltro.getText());
+				TipoDePecaTableModel model = new TipoDePecaTableModel(pecas);
 				table.setModel(model);
 				TableColumnModel cm = table.getColumnModel();
 				cm.getColumn(0).setPreferredWidth(50);
@@ -75,7 +76,7 @@ public class TelaConsultaDePeca extends JFrame {
 		JButton btnAdicionar = new JButton("Adicionar");
 		btnAdicionar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				telaDeCadastro.setVisible(true);
+				telaDeCadastroTipoPeca.setVisible(true);
 				setVisible(false);
 			}
 		});
@@ -83,9 +84,6 @@ public class TelaConsultaDePeca extends JFrame {
 		
 		JScrollPane scrollPane = new JScrollPane(table);
 		table.setFillsViewportHeight(true);
-		
-		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(null, "A\u00E7\u00F5es para a linha selecionada", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -99,10 +97,9 @@ public class TelaConsultaDePeca extends JFrame {
 								.addPreferredGap(ComponentPlacement.RELATED)
 								.addComponent(btnPesquisar)
 								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(btnAdicionar))
-							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 212, GroupLayout.PREFERRED_SIZE))
+								.addComponent(btnAdicionar)))
 						.addComponent(lblFiltro))
-					.addContainerGap(6, Short.MAX_VALUE))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -115,56 +112,8 @@ public class TelaConsultaDePeca extends JFrame {
 						.addComponent(btnAdicionar))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 191, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(40, Short.MAX_VALUE))
+					.addContainerGap(89, Short.MAX_VALUE))
 		);
-		
-		JButton btnEditar = new JButton("Editar");
-		btnEditar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int linhaSelecionada = table.getSelectedRow();
-				PecaTableModel model = (PecaTableModel)table.getModel();
-				Peca pecaSelecionada = model.getPor(linhaSelecionada);
-				telaDeCadastro.colocarEmEdicao(pecaSelecionada);
-				telaDeCadastro.setVisible(true);
-				setVisible(false);
-			}
-		});
-		
-		JButton btnExcluir = new JButton("Excluir");
-		btnExcluir.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int linhaSelecionada = table.getSelectedRow();
-				PecaTableModel model = (PecaTableModel)table.getModel();
-				Peca pecaSalva = model.getPor(linhaSelecionada);
-				service.removerPor(pecaSalva.getId());
-				model.removerPor(linhaSelecionada);
-				table.updateUI();
-				JOptionPane.showMessageDialog(contentPane, 
-						"Peça removida com sucesso");
-			}
-		});
-		GroupLayout gl_panel = new GroupLayout(panel);
-		gl_panel.setHorizontalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addGap(22)
-					.addComponent(btnEditar)
-					.addGap(18)
-					.addComponent(btnExcluir)
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-		);
-		gl_panel.setVerticalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnEditar)
-						.addComponent(btnExcluir))
-					.addContainerGap(25, Short.MAX_VALUE))
-		);
-		panel.setLayout(gl_panel);
 		contentPane.setLayout(gl_contentPane);
 	}
 }
